@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MoviesApp</string>
+    <string name="sort_popularity">Most Popular</string>
+    <string name="sort_rating">Highest Rated</string>
+    <string name="error_message">No Network Connection</string>
+    <string name="content_description">Movie Thumbnail</string>
+    <string name="rating_format">%s/10</string>
+</resources>
