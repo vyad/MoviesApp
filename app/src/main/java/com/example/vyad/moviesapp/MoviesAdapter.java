@@ -102,7 +102,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesHold
         void bind(int listIndex) {
             Movies movies = mMoviesData[listIndex];
             String thumbnailUrl = MOVIE_THUMBNAIL_BASE_URL + movies.getPosterPath();
-            Picasso.with(context).load(thumbnailUrl).into(moviesIcon);
+            Picasso.with(context)
+                    .load(thumbnailUrl)
+                    .placeholder(R.drawable.loading)
+                    .error(R.drawable.error)
+                    .into(moviesIcon);
         }
 
         @Override

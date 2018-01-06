@@ -7,6 +7,7 @@ package com.example.vyad.moviesapp;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +21,8 @@ import java.util.Scanner;
  */
 final class NetworkUtils {
 
+    private static final String API_KEY_VALUE = "";
+    private static final String API_KEY = "api_key";
     /**
      * Takes url as string and convert it into URL instance
      *
@@ -28,7 +31,9 @@ final class NetworkUtils {
      * @throws MalformedURLException if a string can not be converted into a url
      */
     public static URL buildUrl(final String moviesUrl) throws MalformedURLException {
-        return new URL(moviesUrl);
+        Uri uri = Uri.parse(moviesUrl).buildUpon()
+                .appendQueryParameter(API_KEY, API_KEY_VALUE).build();
+        return new URL(String.valueOf(uri));
     }
 
     /**

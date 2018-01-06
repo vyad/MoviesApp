@@ -5,20 +5,20 @@
 package com.example.vyad.moviesapp;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import java.net.URL;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Launches a movie app with list of movies in grid layout, provides a way to sort movies
@@ -29,21 +29,23 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     private MoviesAdapter mMoviesAdapter;
 
-    private RecyclerView mMoviesList;
+    @SuppressWarnings("WeakerAccess")
+    @BindView(R.id.rv_recycler_view)
+    RecyclerView mMoviesList;
 
-    private TextView mDisplayError;
+    @SuppressWarnings("WeakerAccess")
+    @BindView(R.id.tv_display_error_message)
+    TextView mDisplayError;
 
     private MenuItem mSortByPopularity;
 
     private MenuItem mSortByRating;
 
     private static final String MOST_POPULAR_MOVIES_URL =
-            "http://api.themoviedb.org/3/movie/popular?api_key=API_KEY";
+            "http://api.themoviedb.org/3/movie/popular";
 
     private static final String HIGHEST_RATED_MOVIES_URL =
-            "http://api.themoviedb.org/3/movie/top_rated?api_key=API_KEY";
-
-    private static final String TAG = MainActivity.class.getName();
+            "http://api.themoviedb.org/3/movie/top_rated";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
           This TextView is used to display errors and will be hidden when there are no errors
          */
         mDisplayError = findViewById(R.id.tv_display_error_message);
+
+        ButterKnife.bind(this);
 
         /*
           GridLayoutManager to shows movies poster in grid form
@@ -85,7 +89,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         /*
           Once everything is setup now load movies data sorted by most popular movie first.
          */
-        new FetchMovieTask().execute(MOST_POPULAR_MOVIES_URL);
+
+        new FetchMovieTask(this).execute(MOST_POPULAR_MOVIES_URL);
     }
 
     @Override
@@ -99,29 +104,10 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
      * Gets response from movies api and set it on the layout
      */
     @SuppressLint("StaticFieldLeak")
-    public class FetchMovieTask extends AsyncTask<String, Void, Movies[]> {
+    public class FetchMovieTask extends FetchTask<String, Void, Movies[]> {
 
-        @Override
-        protected Movies[] doInBackground(String... urls) {
-
-            /* if api endpoint is null then no need to hit the server */
-            if (urls.length == 0) {
-                return null;
-            }
-
-            try {
-                URL movieRequestUrl = NetworkUtils.buildUrl(urls[0]);
-
-                String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(
-                        MainActivity.this, movieRequestUrl);
-
-                return OpenMoviesJsonUtils.getMoviesObjectFromJsonString(
-                        jsonMovieResponse);
-
-            } catch (Exception e) {
-                Log.e(TAG, "Exception occurred", e);
-            }
-            return null;
+        public FetchMovieTask(Context context) {
+            super(context);
         }
 
         @Override
@@ -158,12 +144,12 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         /* If sort by popularity menu item is clicked, then hides it and show sort by highest rating
         * menu and load movies data sorted by popularity and vice versa*/
         if (id == R.id.sort_popularity) {
-            new FetchMovieTask().execute(MOST_POPULAR_MOVIES_URL);
+            new FetchMovieTask(this).execute(MOST_POPULAR_MOVIES_URL);
             mSortByRating.setVisible(true);
             mSortByPopularity.setVisible(false);
             return true;
         } else if (id == R.id.sort_ratings) {
-            new FetchMovieTask().execute(HIGHEST_RATED_MOVIES_URL);
+            new FetchMovieTask(this).execute(HIGHEST_RATED_MOVIES_URL);
             mSortByPopularity.setVisible(true);
             mSortByRating.setVisible(false);
             return true;
@@ -189,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     /**
      * loads adapter with movies data
+     *
      * @param movies array of movies data
      */
     private void loadMoviesData(final Movies[] movies) {
