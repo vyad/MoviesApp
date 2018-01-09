@@ -21,7 +21,6 @@ import java.util.Scanner;
  */
 final class NetworkUtils {
 
-    private static final String API_KEY_VALUE = "";
     private static final String API_KEY = "api_key";
     /**
      * Takes url as string and convert it into URL instance
@@ -32,7 +31,7 @@ final class NetworkUtils {
      */
     public static URL buildUrl(final String moviesUrl) throws MalformedURLException {
         Uri uri = Uri.parse(moviesUrl).buildUpon()
-                .appendQueryParameter(API_KEY, API_KEY_VALUE).build();
+                .appendQueryParameter(API_KEY, BuildConfig.API_KEY).build();
         return new URL(String.valueOf(uri));
     }
 
