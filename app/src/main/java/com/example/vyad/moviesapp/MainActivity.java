@@ -4,13 +4,15 @@
 
 package com.example.vyad.moviesapp;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -25,9 +27,18 @@ import butterknife.ButterKnife;
  * by highest rated or most popular movie and also provide onclick listener on the movies poster
  * to open movies details.
  */
-public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesClickListener {
+public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesClickListener,
+        LoaderCallbacks<Movies[]> {
 
     private MoviesAdapter mMoviesAdapter;
+
+    private static final String TAG = MainActivity.class.getName();
+
+
+    //  Loader id to uniquely this loader
+    private static final int MOVIES_LOADER = 22;
+
+    private static final String MOVIES_URL = "movies_url";
 
     @SuppressWarnings("WeakerAccess")
     @BindView(R.id.rv_recycler_view)
@@ -86,11 +97,20 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
          /* Setting the adapter attaches it to the RecyclerView in our layout. */
         mMoviesList.setAdapter(mMoviesAdapter);
 
-        /*
-          Once everything is setup now load movies data sorted by most popular movie first.
-         */
+        LoaderManager loaderManager = getSupportLoaderManager();
+        Loader<Movies[]> loader = loaderManager.getLoader(MOVIES_LOADER);
+        Bundle bundle = new Bundle();
+        bundle.putString(MOVIES_URL, MOST_POPULAR_MOVIES_URL);
 
-        new FetchMovieTask(this).execute(MOST_POPULAR_MOVIES_URL);
+        //If loader is not created then create the loader else restart the same loader for current
+        // bundle and callbacks
+        if (loader == null) {
+            Log.d(TAG, "Loader is null");
+            loaderManager.initLoader(MOVIES_LOADER, bundle, MainActivity.this);
+        } else {
+            Log.d(TAG, "Loader is not null");
+            loaderManager.restartLoader(MOVIES_LOADER, bundle, MainActivity.this);
+        }
     }
 
     @Override
@@ -100,24 +120,25 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         startActivity(intentToStartDetailsActivity);
     }
 
-    /**
-     * Gets response from movies api and set it on the layout
-     */
-    @SuppressLint("StaticFieldLeak")
-    public class FetchMovieTask extends FetchTask<String, Void, Movies[]> {
+    @Override
+    public Loader<Movies[]> onCreateLoader(int id, final Bundle args) {
+        Log.d(TAG, "onCreateLoader");
+        return new FetchTask(this, args.getString(MOVIES_URL));
+    }
 
-        public FetchMovieTask(Context context) {
-            super(context);
+    @Override
+    public void onLoadFinished(Loader<Movies[]> loader, Movies[] data) {
+        Log.d(TAG, "onLoadFinished");
+        if (data != null) {
+            loadMoviesData(data);
+        } else {
+            showErrorMessage();
         }
+    }
 
-        @Override
-        protected void onPostExecute(Movies[] moviesData) {
-            if (moviesData != null) {
-                loadMoviesData(moviesData);
-            } else {
-                showErrorMessage();
-            }
-        }
+    @Override
+    public void onLoaderReset(Loader<Movies[]> loader) {
+
     }
 
     @Override
@@ -144,12 +165,12 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         /* If sort by popularity menu item is clicked, then hides it and show sort by highest rating
         * menu and load movies data sorted by popularity and vice versa*/
         if (id == R.id.sort_popularity) {
-            new FetchMovieTask(this).execute(MOST_POPULAR_MOVIES_URL);
+            resetLoader(MOST_POPULAR_MOVIES_URL);
             mSortByRating.setVisible(true);
             mSortByPopularity.setVisible(false);
             return true;
         } else if (id == R.id.sort_ratings) {
-            new FetchMovieTask(this).execute(HIGHEST_RATED_MOVIES_URL);
+            resetLoader(HIGHEST_RATED_MOVIES_URL);
             mSortByPopularity.setVisible(true);
             mSortByRating.setVisible(false);
             return true;
@@ -181,5 +202,15 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     private void loadMoviesData(final Movies[] movies) {
         showMoviesData();
         mMoviesAdapter.setMoviesData(movies);
+    }
+
+    /**
+     * Restart the loader to fetch latest movies data
+     * @param moviesUrl movies url
+     */
+    private void resetLoader(final String moviesUrl) {
+        Bundle bundle = new Bundle();
+        bundle.putString(MOVIES_URL, moviesUrl);
+        getSupportLoaderManager().restartLoader(MOVIES_LOADER, bundle, this);
     }
 }

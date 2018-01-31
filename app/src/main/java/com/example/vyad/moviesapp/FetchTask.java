@@ -2,37 +2,41 @@ package com.example.vyad.moviesapp;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.AsyncTask;
+import android.support.v4.content.AsyncTaskLoader;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.net.URL;
 
 @SuppressLint("StaticFieldLeak")
-class FetchTask<S, V, T> extends AsyncTask<String, Void, Movies[]> {
+class FetchTask extends AsyncTaskLoader<Movies[]> {
     private static final String TAG = FetchTask.class.getName();
     private final Context mContext;
+    private final String mUrl;
 
-    /*
-    initializes the context
-     */
-    public FetchTask(final Context context) {
+    public FetchTask(final Context context, final String url) {
+        super(context);
         mContext = context;
+        mUrl = url;
     }
 
     @Override
-    protected Movies[] doInBackground(String... urls) {
+    protected void onStartLoading() {
+        super.onStartLoading();
+        forceLoad();
+    }
 
-            /* if api endpoint is null then no need to hit the server */
-        if (urls.length == 0) {
+    @Override
+    public Movies[] loadInBackground() {
+        if (TextUtils.isEmpty(mUrl)) {
             return null;
         }
 
         try {
-            URL movieRequestUrl = NetworkUtils.buildUrl(urls[0]);
+            URL movieRequestUrl = NetworkUtils.buildUrl(mUrl);
 
             String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(
                     mContext, movieRequestUrl);
-
             return OpenMoviesJsonUtils.getMoviesObjectFromJsonString(
                     jsonMovieResponse);
 
@@ -41,4 +45,5 @@ class FetchTask<S, V, T> extends AsyncTask<String, Void, Movies[]> {
         }
         return null;
     }
+
 }
