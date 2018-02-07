@@ -44,6 +44,7 @@ import java.text.ParseException;
 import com.example.vyad.moviesapp.data.MovieContract.MoviesEntry;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
 /**
@@ -88,6 +89,10 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
         Intent intentStartedActivity = getIntent();
         mMovies = intentStartedActivity.getParcelableExtra(Intent.EXTRA_TEXT);
+ //       Implementing Butter knife
+        ButterKnife.bind(this);
+
+        mMovies = getIntent().getParcelableExtra(Intent.EXTRA_TEXT);
 
         setMoviesDetails();
         initOrRestartLoader();
@@ -175,6 +180,9 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         setFavoriteTextView();
     }
 
+    /**
+     * Init or restart trailer and review loader
+     */
     private void initOrRestartLoader() {
         LoaderManager loaderManager = getSupportLoaderManager();
         Bundle bundle = new Bundle();
@@ -237,7 +245,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public void click(Trailer trailer) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        Uri file = Uri.parse(String.format("https://www.youtube.com/watch?v=%s", trailer.getKey()));
+        Uri file = Uri.parse(String.format(getString(R.string.youtube_url), trailer.getKey()));
         intent.setData(file);
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
@@ -277,12 +285,15 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         startService(intent);
     }
 
+    /**
+     * Shares first trailer of movie
+     */
     private void shareTrailer() {
         if (mTrailers == null) {
             return;
         }
 
-        Uri file = Uri.parse(String.format("https://www.youtube.com/watch?v=%s", mTrailers[0].getKey()));
+        Uri file = Uri.parse(String.format(getString(R.string.youtube_url), mTrailers[0].getKey()));
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, file);
@@ -293,6 +304,9 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         startActivity(sendIntent);
     }
 
+    /**
+     * Set text of favorite text view.
+     */
     private void setFavoriteTextView() {
         ContentResolver contentResolver = getContentResolver();
         String selection = MoviesEntry.COLUMN_MOVIE_ID + " = ?";

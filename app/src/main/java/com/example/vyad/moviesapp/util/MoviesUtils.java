@@ -14,6 +14,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ *  wraps methods which can be used in multiple class of the package and is in common with others.
+ */
 public class MoviesUtils {
 
     /**

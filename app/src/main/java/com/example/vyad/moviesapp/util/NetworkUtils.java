@@ -5,6 +5,7 @@
 package com.example.vyad.moviesapp.util;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -88,14 +89,39 @@ public final class NetworkUtils {
         return netInfo != null && netInfo.isConnected();
     }
 
+    /**
+     * creates trailer url for a movie
+     * @param context application context
+     * @param moviesId unique movies id
+     * @return String trailer url
+     */
     public static String getTrailerUrl(final Context context, final String moviesId) {
         String trailerUrl = context.getResources().getString(R.string.trailer_url);
         return String.format(trailerUrl, moviesId);
     }
 
+    /**
+     * creates review url for a movie
+     * @param context application context
+     * @param moviesId unique movies id
+     * @return String review url
+     */
     public static String getReviewsUrl(final Context context, final String moviesId) {
         String reviewUrl = context.getResources().getString(R.string.reviews_url);
         return String.format(reviewUrl, moviesId);
     }
 
+    public static String getPopularMoviesUrl(final Context context) {
+        Resources rs = context.getResources();
+        String moviesUrlFormat = rs.getString(R.string.movies_url);
+        String typeOfUrl = rs.getString(R.string.popular);
+        return String.format(moviesUrlFormat, typeOfUrl);
+    }
+
+    public static String getTopRatedMoviesUrl(final Context context) {
+        Resources rs = context.getResources();
+        String moviesUrlFormat = rs.getString(R.string.movies_url);
+        String typeOfUrl = rs.getString(R.string.top_rated);
+        return String.format(moviesUrlFormat, typeOfUrl);
+    }
 }

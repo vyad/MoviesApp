@@ -1,7 +1,6 @@
 /*
  * Copyright (C) 2018 The Android Open Source Project
 */
-
 package com.example.vyad.moviesapp.data;
 
 import android.annotation.SuppressLint;
@@ -11,10 +10,15 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.vyad.moviesapp.data.MovieContract.MoviesEntry;
 
+/**
+ * Manages local database for movies
+ */
 class MoviesDbHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "weather.db";
+//    Database name
+    private static final String DATABASE_NAME = "movies.db";
 
+//    Current version of database. onUpgrade method will be called only if database version is changed.
     private static final int DATABASE_VERSION = 1;
 
     public MoviesDbHelper(Context context) {

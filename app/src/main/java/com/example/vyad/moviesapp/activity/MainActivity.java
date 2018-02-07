@@ -27,6 +27,7 @@ import com.example.vyad.moviesapp.R;
 import com.example.vyad.moviesapp.util.FetchTaskUtils;
 import com.example.vyad.moviesapp.data.MovieContract.MoviesEntry;
 import com.example.vyad.moviesapp.util.MoviesUtils;
+import com.example.vyad.moviesapp.util.NetworkUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -74,9 +75,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         ButterKnife.bind(this);
 
 //        Initializing the movies popular and highest rated movies url
-        String moviesUrl = getString(R.string.movies_url);
-        mPopularMoviesUrl = String.format(moviesUrl, getString(R.string.popular));
-        mRatedMoviesUrl = String.format(moviesUrl, getString(R.string.top_rated));
+        mPopularMoviesUrl = NetworkUtils.getPopularMoviesUrl(this);
+        mRatedMoviesUrl = NetworkUtils.getTopRatedMoviesUrl(this);
 
         /*
           GridLayoutManager to shows movies poster in grid form

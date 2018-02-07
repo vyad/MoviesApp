@@ -1,3 +1,6 @@
+/*
+ * Copyright (C) 2018 The Android Open Source Project
+*/
 package com.example.vyad.moviesapp.util;
 
 import android.annotation.SuppressLint;
@@ -11,11 +14,19 @@ import com.example.vyad.moviesapp.R;
 
 import java.net.URL;
 
+/**
+ * Fetch movies data in a background thread and notify the activity when it is done.
+ */
 @SuppressLint("StaticFieldLeak")
 public class FetchTaskUtils extends AsyncTaskLoader {
     private static final String TAG = FetchTaskUtils.class.getName();
+
     private final Context mContext;
+
+//    Url to hit for data
     private final String mUrl;
+
+//    This help to identify return type of data (every time we get string response data but need to return in object form).
     private final String mRequestType;
 
     public FetchTaskUtils(final Context context, final String url, final String requestType) {

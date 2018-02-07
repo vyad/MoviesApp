@@ -13,6 +13,7 @@
     <string name="trailer_url" translatable="false">http://api.themoviedb.org/3/movie/%s/videos</string>
     <string name="reviews_url" translatable="false">http://api.themoviedb.org/3/movie/%s/reviews</string>
     <string name="thumbnail_url" translatable="false">http://image.tmdb.org/t/p/w185/%s</string>
+    <string name="youtube_url" translatable="false">https://www.youtube.com/watch?v=%s</string>
 
     <!--Text to show when there is no network connectivity-->
     <string name="error_message">No Network Connection</string>

@@ -1,5 +1,11 @@
+/*
+ * Copyright (C) 2018 The Android Open Source Project
+*/
 package com.example.vyad.moviesapp;
 
+/**
+ * Wraps trailer data
+ */
 public class Trailer {
 
     private final String mId;
