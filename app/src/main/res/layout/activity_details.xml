@@ -35,8 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
-                android:layout_marginRight="20dp"
-                android:contentDescription="@string/content_description" />
+                android:contentDescription="@string/poster_content_dsc" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -61,17 +60,65 @@
                     android:padding="10dp"
                     android:textColor="@color/textColor"
                     android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/favorite"
+                    android:text="@string/favorite_label"
+                    android:textAlignment="center"
+                    android:textSize="12sp"
+                    android:background="@color/titleColor"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:paddingRight="8dp"
+                    android:paddingLeft="8dp" />
             </LinearLayout>
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_synopsis"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="10dp"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:paddingLeft="30dp"
             android:paddingRight="30dp"
-            android:paddingTop="10dp" />
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tv_synopsis"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:contentDescription="@string/divider_content_dsc"
+                android:background="@color/titleColor"/>
+
+            <TextView
+                android:text = "@string/trailer_label"
+                style="@style/TextAppearance.AppCompat.Headline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_trailer_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"/>
+
+            <TextView
+                android:text="@string/review_label"
+                android:layout_width="wrap_content"
+                style="@style/TextAppearance.AppCompat.Headline"
+                android:layout_height="wrap_content" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_reviews_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"/>
+        </LinearLayout>
 
     </LinearLayout>
+
 </ScrollView>

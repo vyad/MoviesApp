@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MainActivity"
+        <activity android:name=".activity.MainActivity"
             android:label="Pop Movies">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,12 +22,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DetailsActivity" android:parentActivityName=".MainActivity"
+        <activity android:name=".activity.DetailsActivity" android:parentActivityName=".activity.MainActivity"
             android:label="MovieDetail">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity">
+                android:value=".activity.DetailsActivity">
             </meta-data>
         </activity>
+
+        <provider
+            android:authorities="com.example.vyad.moviesapp"
+            android:name="com.example.vyad.moviesapp.data.MoviesProvider"
+            android:exported="false"/>
+
+        <service android:name=".services.MoviesService"
+            android:exported="false">
+
+        </service>
     </application>
 
 </manifest>

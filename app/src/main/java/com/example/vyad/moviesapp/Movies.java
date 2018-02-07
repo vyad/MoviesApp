@@ -12,6 +12,7 @@ import android.os.Parcelable;
  * intents
  */
 public class Movies implements Parcelable {
+    private final String mId;
     private final double mVoteAverage;
     private final double mPopularity;
     private final String mPosterPath;
@@ -29,14 +30,19 @@ public class Movies implements Parcelable {
      * @param releaseDate release date of the movie
      * @param popularity how popular this movie is
      */
-    public Movies(final String originalTitle, final String posterPath, final String overview, final double voteAverage,
+    public Movies(final String id, final String originalTitle, final String posterPath, final String overview, final double voteAverage,
                   final String releaseDate, final double popularity) {
+        mId = id;
         mOriginalTitle = originalTitle;
         mPosterPath = posterPath;
         mOverview = overview;
         mVoteAverage = voteAverage;
         mReleaseDate = releaseDate;
         mPopularity = popularity;
+    }
+
+    public String getId() {
+        return mId;
     }
 
     public String getOriginalTitle() {
@@ -59,6 +65,10 @@ public class Movies implements Parcelable {
         return mReleaseDate;
     }
 
+    public double getPopularity() {
+        return mPopularity;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -66,6 +76,7 @@ public class Movies implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int i) {
+        out.writeString(mId);
         out.writeDouble(mVoteAverage);
         out.writeDouble(mPopularity);
         out.writeString(mPosterPath);
@@ -87,6 +98,7 @@ public class Movies implements Parcelable {
 
     // example constructor that takes a Parcel and gives you an object populated with it's values
     private Movies(Parcel in) {
+        mId = in.readString();
         mVoteAverage = in.readDouble();
         mPopularity = in.readDouble();
         mPosterPath = in.readString();

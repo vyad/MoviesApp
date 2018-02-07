@@ -2,12 +2,14 @@
  * Copyright (C) 2018 The Android Open Source Project
 */
 
-package com.example.vyad.moviesapp;
+package com.example.vyad.moviesapp.util;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+
+import com.example.vyad.moviesapp.BuildConfig;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,12 +18,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
+import com.example.vyad.moviesapp.R;
+
 /**
  * These utilities will be used to communicate with the movies servers.
  */
-final class NetworkUtils {
+public final class NetworkUtils {
+
 
     private static final String API_KEY = "api_key";
+
     /**
      * Takes url as string and convert it into URL instance
      *
@@ -81,4 +87,15 @@ final class NetworkUtils {
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnected();
     }
+
+    public static String getTrailerUrl(final Context context, final String moviesId) {
+        String trailerUrl = context.getResources().getString(R.string.trailer_url);
+        return String.format(trailerUrl, moviesId);
+    }
+
+    public static String getReviewsUrl(final Context context, final String moviesId) {
+        String reviewUrl = context.getResources().getString(R.string.reviews_url);
+        return String.format(reviewUrl, moviesId);
+    }
+
 }

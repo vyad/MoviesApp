@@ -2,9 +2,11 @@
  * Copyright (C) 2018 The Android Open Source Project
 */
 
-package com.example.vyad.moviesapp;
+package com.example.vyad.moviesapp.activity;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -18,6 +20,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import com.example.vyad.moviesapp.Movies;
+import com.example.vyad.moviesapp.MoviesAdapter;
+import com.example.vyad.moviesapp.R;
+import com.example.vyad.moviesapp.util.FetchTaskUtils;
+import com.example.vyad.moviesapp.data.MovieContract.MoviesEntry;
+import com.example.vyad.moviesapp.util.MoviesUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     private MoviesAdapter mMoviesAdapter;
 
     private static final String TAG = MainActivity.class.getName();
-
 
     //  Loader id to uniquely this loader
     private static final int MOVIES_LOADER = 22;
@@ -52,29 +60,23 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     private MenuItem mSortByRating;
 
-    private static final String MOST_POPULAR_MOVIES_URL =
-            "http://api.themoviedb.org/3/movie/popular";
+    private MenuItem mFavorite;
 
-    private static final String HIGHEST_RATED_MOVIES_URL =
-            "http://api.themoviedb.org/3/movie/top_rated";
+    private String mPopularMoviesUrl;
+    private String mRatedMoviesUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*
-         * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
-         * do things like set the adapter of the RecyclerView and toggle the visibility.
-         */
-        mMoviesList = findViewById(R.id.rv_recycler_view);
-
-        /*
-          This TextView is used to display errors and will be hidden when there are no errors
-         */
-        mDisplayError = findViewById(R.id.tv_display_error_message);
-
+//        Implementing Butter knife
         ButterKnife.bind(this);
+
+//        Initializing the movies popular and highest rated movies url
+        String moviesUrl = getString(R.string.movies_url);
+        mPopularMoviesUrl = String.format(moviesUrl, getString(R.string.popular));
+        mRatedMoviesUrl = String.format(moviesUrl, getString(R.string.top_rated));
 
         /*
           GridLayoutManager to shows movies poster in grid form
@@ -100,15 +102,13 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         LoaderManager loaderManager = getSupportLoaderManager();
         Loader<Movies[]> loader = loaderManager.getLoader(MOVIES_LOADER);
         Bundle bundle = new Bundle();
-        bundle.putString(MOVIES_URL, MOST_POPULAR_MOVIES_URL);
+        bundle.putString(MOVIES_URL, mPopularMoviesUrl);
 
         //If loader is not created then create the loader else restart the same loader for current
         // bundle and callbacks
         if (loader == null) {
-            Log.d(TAG, "Loader is null");
             loaderManager.initLoader(MOVIES_LOADER, bundle, MainActivity.this);
         } else {
-            Log.d(TAG, "Loader is not null");
             loaderManager.restartLoader(MOVIES_LOADER, bundle, MainActivity.this);
         }
     }
@@ -122,13 +122,11 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     @Override
     public Loader<Movies[]> onCreateLoader(int id, final Bundle args) {
-        Log.d(TAG, "onCreateLoader");
-        return new FetchTask(this, args.getString(MOVIES_URL));
+        return new FetchTaskUtils(this, args.getString(MOVIES_URL), getString(R.string.movies));
     }
 
     @Override
     public void onLoadFinished(Loader<Movies[]> loader, Movies[] data) {
-        Log.d(TAG, "onLoadFinished");
         if (data != null) {
             loadMoviesData(data);
         } else {
@@ -155,6 +153,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         /* Menu item to sort movies item by highest rating and will be hidden when movies are
         * already sorted by highest rating */
         mSortByRating = menu.findItem(R.id.sort_ratings);
+
+        mFavorite = menu.findItem(R.id.favorite_menu);
         return true;
     }
 
@@ -163,17 +163,25 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         int id = item.getItemId();
 
         /* If sort by popularity menu item is clicked, then hides it and show sort by highest rating
-        * menu and load movies data sorted by popularity and vice versa*/
+        * menu and favorite and load movies data sorted by popularity and vice versa*/
         if (id == R.id.sort_popularity) {
-            resetLoader(MOST_POPULAR_MOVIES_URL);
-            mSortByRating.setVisible(true);
+            resetLoader(mPopularMoviesUrl);
             mSortByPopularity.setVisible(false);
+            mSortByRating.setVisible(true);
+            mFavorite.setVisible(true);
             return true;
         } else if (id == R.id.sort_ratings) {
-            resetLoader(HIGHEST_RATED_MOVIES_URL);
-            mSortByPopularity.setVisible(true);
+            resetLoader(mRatedMoviesUrl);
             mSortByRating.setVisible(false);
+            mSortByPopularity.setVisible(true);
+            mFavorite.setVisible(true);
             return true;
+        } else if (id == R.id.favorite_menu) {
+            loadFavoriteMovies();
+            mFavorite.setVisible(false);
+            mSortByPopularity.setVisible(true);
+            mSortByRating.setVisible(true);
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -206,11 +214,27 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     /**
      * Restart the loader to fetch latest movies data
+     *
      * @param moviesUrl movies url
      */
     private void resetLoader(final String moviesUrl) {
         Bundle bundle = new Bundle();
         bundle.putString(MOVIES_URL, moviesUrl);
         getSupportLoaderManager().restartLoader(MOVIES_LOADER, bundle, this);
+    }
+
+    private void loadFavoriteMovies() {
+        ContentResolver contentResolver = getContentResolver();
+        Cursor cursor = contentResolver.query(MoviesEntry.CONTENT_URI, null,
+                null, null, null);
+
+        if ((cursor == null) || (cursor.getCount() == 0)) {
+            Log.d(TAG, "There is no favorite movies");
+            mDisplayError.setText(getString(R.string.no_favorite_movies));
+            showErrorMessage();
+            return;
+        }
+        Movies[] movies = MoviesUtils.getMoviesObjectFromCursor(cursor);
+        mMoviesAdapter.setMoviesData(movies);
     }
 }

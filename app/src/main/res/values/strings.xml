@@ -1,8 +1,43 @@
 <resources>
+
+    <!--App Name-->
     <string name="app_name">MoviesApp</string>
+
+    <!--Menu Label on MainActivity-->
     <string name="sort_popularity">Most Popular</string>
     <string name="sort_rating">Highest Rated</string>
+    <string name="favorite_menu">Favorite Movies</string>
+
+    <!--Urls-->
+    <string name="movies_url" translatable="false">http://api.themoviedb.org/3/movie/%s</string>
+    <string name="trailer_url" translatable="false">http://api.themoviedb.org/3/movie/%s/videos</string>
+    <string name="reviews_url" translatable="false">http://api.themoviedb.org/3/movie/%s/reviews</string>
+    <string name="thumbnail_url" translatable="false">http://image.tmdb.org/t/p/w185/%s</string>
+
+    <!--Text to show when there is no network connectivity-->
     <string name="error_message">No Network Connection</string>
-    <string name="content_description">Movie Thumbnail</string>
-    <string name="rating_format">%s/10</string>
+    <string name="no_favorite_movies">Empty Favorite Movies List</string>
+
+    <!--Content descriptions-->
+    <string name="poster_content_dsc">Movie Poster</string>
+    <string name="divider_content_dsc">Divider</string>
+    <string name="trailer_content_dsc">Movie Trailer</string>
+
+    <!--Formats to generate a text runtime-->
+    <string name="rating_format" translatable="false">%s/10</string>
+
+    <!--Key to identify what kinds of data need to fetch from fetch class-->
+    <string name="movies" translatable="false">movies</string>
+    <string name="trailer" translatable="false">trailer</string>
+    <string name="reviews" translatable="false">reviews</string>
+
+    <string name="popular" translatable="false">popular</string>
+    <string name="top_rated" translatable="false">top_rated</string>
+
+    <!--Labels-->
+    <string name="trailer_label">Trailers</string>
+    <string name="favorite_label">MARK AS FAVORITE</string>
+    <string name="un_favorite_label">MARK AS UN FAVORITE</string>
+    <string name="review_label">Reviews</string>
+    <string name="share_title">Share</string>
 </resources>
