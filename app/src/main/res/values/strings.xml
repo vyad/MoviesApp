@@ -21,7 +21,6 @@
 
     <!--Content descriptions-->
     <string name="poster_content_dsc">Movie Poster</string>
-    <string name="divider_content_dsc">Divider</string>
     <string name="trailer_content_dsc">Movie Trailer</string>
 
     <!--Formats to generate a text runtime-->
@@ -36,9 +35,16 @@
     <string name="top_rated" translatable="false">top_rated</string>
 
     <!--Labels-->
-    <string name="trailer_label">Trailers</string>
+    <string name="trailer_label">Trailers: </string>
     <string name="favorite_label">MARK AS FAVORITE</string>
     <string name="un_favorite_label">MARK AS UN FAVORITE</string>
-    <string name="review_label">Reviews</string>
+    <string name="review_label">Reviews: </string>
     <string name="share_title">Share</string>
+
+    <!--Default values-->
+    <string name="default_release_date">2017</string>
+    <string name="default_rating">7.1/10</string>
+    <string name="default_synopsis">"Before she was Wonder Woman (Gal Gadot), she was Diana, princess of the Amazons, trained to be an unconquerable warrior. Raised on a sheltered island paradise, Diana meets an American pilot (Chris Pine) who tells her about the massive conflict that's raging in the outside world. Convinced that she can stop the threat, Diana leaves her home for the first time. Fighting alongside men in a war to end all wars, she finally discovers her full powers and true destiny."</string>
+    <string name="default_review">"It was a good movie as far as it goes -- resourceful characters deprived of both freedom and their memories manage to build a society and think their way out of their bondage.  The problem is that at the end, it simply stopped.  No dramatic reason for ending where it does, no resolution of why did the captors do this .  Even in a series a movie ought to have a decent local climax -- for example,  Kat and Peta winning the Hunger Games."</string>
+    <string name="default_trailer_num">Trailer 1</string>
 </resources>

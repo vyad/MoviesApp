@@ -10,14 +10,18 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Parcelable;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -50,9 +54,14 @@ import butterknife.ButterKnife;
 /**
  * shows details of a movie; original title, thumbnail etc.
  */
-public class DetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks, TrailerAdapter.TrailerClickListener, View.OnClickListener {
+public class DetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks,
+        TrailerAdapter.TrailerClickListener, View.OnClickListener {
 
     private static final String TAG = DetailsActivity.class.getName();
+    private static final String BUNDLE_RECYCLER_TRAILER = "recycler_trailer";
+    private static final String BUNDLE_RECYCLER_REVIEWS = "recycler_review";
+    private static final String REVIEWS = "reviews";
+    private static final String TRAILER = "trailer";
 
     private static final int TRAILER_LOADER = 20;
 
@@ -65,6 +74,8 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     private Movies mMovies;
 
     private Trailer[] mTrailers;
+
+    private Reviews[] mReviews;
 
     private TrailerAdapter mTrailerAdapter;
 
@@ -82,23 +93,39 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     @BindView(R.id.favorite)
     TextView mTextViewFavorite;
 
+    @SuppressWarnings("WeakerAccess")
+    @BindView(R.id.header_image)
+    ImageView mDisplayImage;
+
+    @SuppressWarnings("WeakerAccess")
+    @BindView(R.id.tv_release_date)
+    TextView mDisplayReleaseYear;
+
+    @SuppressWarnings("WeakerAccess")
+    @BindView(R.id.tv_rating)
+    TextView mDisplayRating;
+
+    @SuppressWarnings("WeakerAccess")
+    @BindView(R.id.tv_synopsis)
+    TextView mDisplayOverview;
+
+    @SuppressWarnings("WeakerAccess")
+    @BindView(R.id.collapsing_toolbar)
+    CollapsingToolbarLayout collapsingToolbarLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        Intent intentStartedActivity = getIntent();
-        mMovies = intentStartedActivity.getParcelableExtra(Intent.EXTRA_TEXT);
- //       Implementing Butter knife
+        //       Implementing Butter knife
         ButterKnife.bind(this);
-
         mMovies = getIntent().getParcelableExtra(Intent.EXTRA_TEXT);
 
         setMoviesDetails();
-        initOrRestartLoader();
+        setToolBar();
 
         LinearLayoutManager linearLayoutManager;
-
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
         mTrailerListView.setHasFixedSize(true);
@@ -113,6 +140,23 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         mReviewListView.setAdapter(mReviewsAdapter);
 
         mTextViewFavorite.setOnClickListener(this);
+
+
+        if (savedInstanceState != null) {
+            mTrailers = (Trailer[]) savedInstanceState.getParcelableArray(TRAILER);
+            mReviews = (Reviews[]) savedInstanceState.getParcelableArray(REVIEWS);
+            setTrailerAdapter();
+            setReviewsAdapter();
+
+            Parcelable savedRecyclerTrailer = savedInstanceState.getParcelable(BUNDLE_RECYCLER_TRAILER);
+            mTrailerListView.getLayoutManager().onRestoreInstanceState(savedRecyclerTrailer);
+
+            Parcelable savedRecyclerReviews = savedInstanceState.getParcelable(BUNDLE_RECYCLER_REVIEWS);
+            mReviewListView.getLayoutManager().onRestoreInstanceState(savedRecyclerReviews);
+            return;
+        }
+
+        initOrRestartLoader();
     }
 
     @Override
@@ -137,29 +181,13 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         return super.onOptionsItemSelected(item);
     }
 
-   private void setMoviesDetails() {
-        /* TextView to display title of a movie which is clicked */
-        TextView mDisplayTitle = findViewById(R.id.tv_movie_title);
-
-        /* ImageView to display thumbnail of the movie */
-        ImageView mDisplayImage = findViewById(R.id.tv_image_thumbnail);
-
-        /* TextView to display release date of the movie */
-        TextView mDisplayReleaseYear = findViewById(R.id.tv_release_date);
-
-        /* TextView to display average rating of the movie */
-        TextView mDisplayRating = findViewById(R.id.tv_rating);
-
-        /* TextView to display overview of the movie */
-        TextView mDisplayOverview = findViewById(R.id.tv_synopsis);
-
-        // sets title of the movie
-        mDisplayTitle.setText(String.valueOf(mMovies.getOriginalTitle()));
-
+    private void setMoviesDetails() {
         // sets thumbnail of the movie
         String thumbnailUrl = String.format(getString(R.string.thumbnail_url),
-                mMovies.getPosterPath());
+                mMovies.getBackdropPath());
         Picasso.with(this).load(thumbnailUrl).into(mDisplayImage);
+
+        collapsingToolbarLayout.setTitle(mMovies.getOriginalTitle());
 
         //sets release data of the movie
         try {
@@ -227,10 +255,11 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
             Log.d(TAG, "data is null");
         } else if (loaderId == TRAILER_LOADER) {
             mTrailers = (Trailer[]) data;
-            mTrailerAdapter.setTrailerData(mTrailers);
+            setTrailerAdapter();
         } else if (loaderId == REVIEWS_LOADER) {
             Log.d(TAG, "reviews");
-            mReviewsAdapter.setReviewsData((Reviews[]) data);
+            mReviews = (Reviews[]) data;
+            setReviewsAdapter();
         } else {
             throw new IllegalArgumentException("Illegal Object");
         }
@@ -267,7 +296,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
             cv.put(MoviesEntry.COLUMN_OVERVIEW, mMovies.getOverview());
             cv.put(MoviesEntry.COLUMN_TITLE, mMovies.getOriginalTitle());
             cv.put(MoviesEntry.COLUMN_POSTER_PATH, mMovies.getPosterPath());
-
+            cv.put(MoviesEntry.COLUMN_BACKDROP_PATH, mMovies.getBackdropPath());
             intent.putExtra(Intent.EXTRA_TEXT, cv);
             intent.setAction(MoviesService.ADD_IN_FAVORITE_MOVIES_LIST);
 
@@ -312,7 +341,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         String selection = MoviesEntry.COLUMN_MOVIE_ID + " = ?";
         String[] selectionArgs = new String[]{mMovies.getId()};
         Cursor cursor = contentResolver.query(MoviesEntry.CONTENT_URI, null,
-                selection,selectionArgs,null);
+                selection, selectionArgs, null);
         if (cursor == null) {
             Log.i(TAG, "Cursor is null");
             return;
@@ -329,5 +358,30 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         cursor.close();
     }
 
+    private void setToolBar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    private void setTrailerAdapter() {
+        mTrailerAdapter.setTrailerData(mTrailers);
+    }
+
+    private void setReviewsAdapter() {
+        mReviewsAdapter.setReviewsData(mReviews);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(BUNDLE_RECYCLER_TRAILER, mTrailerListView.getLayoutManager().onSaveInstanceState());
+        outState.putParcelable(BUNDLE_RECYCLER_REVIEWS, mReviewListView.getLayoutManager().onSaveInstanceState());
+        outState.putParcelableArray(TRAILER, mTrailers);
+        outState.putParcelableArray(REVIEWS, mReviews);
+    }
 }

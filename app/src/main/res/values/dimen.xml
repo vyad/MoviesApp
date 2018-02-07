@@ -1,13 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="title_padding_top">16dp</dimen>
-    <dimen name="title_padding_bottom">@dimen/title_padding_top</dimen>
-    <dimen name="title_padding_left">16dp</dimen>
-    <dimen name="title_padding_right">@dimen/title_padding_left</dimen>
+    <dimen name="app_bar_layout_height">350dp</dimen>
 
-    <dimen name="thumbnail_width">120dp</dimen>
-    <dimen name="thumbnail_height">160dp</dimen>
+    <dimen name="release_date_marginBottom">8dp</dimen>
+    <dimen name="release_date_marginStart">16dp</dimen>
+    <dimen name="release_date_textSize">20sp</dimen>
+    <dimen name="favorite_width">100dp</dimen>
+    <dimen name="favorite_textSize">12sp</dimen>
+    <dimen name="synopsis_padding">16dp</dimen>
+    <dimen name="trailer_label_padding">16dp</dimen>
+    <dimen name="trailer_recycler_view_paddingStart">16dp</dimen>
+    <dimen name="trailer_recycler_view_paddingEnd">@dimen/trailer_recycler_view_paddingStart</dimen>
+    <dimen name="review_label_padding">16dp</dimen>
+    <dimen name="review_recycler_view_paddingStart">16dp</dimen>
+    <dimen name="review_recycler_view_paddingEnd">@dimen/review_recycler_view_paddingStart</dimen>
 
-    <dimen name="thumbnail_margin_start">16dp</dimen>
-    <dimen name="thumbnail_margin_top">8dp</dimen>
+    <dimen name="author_padding">16dp</dimen>
+    <dimen name="review_padding">16dp</dimen>
+
+    <dimen name="review_card_cornerRadius">4dp</dimen>
+    <dimen name="review_card_margin">4dp</dimen>
+
+    <dimen name="trailer_card_cornerRadius">1dp</dimen>
+    <dimen name="trailer_card_margin">5dp</dimen>
+
+    <dimen name="play_icon_width">80dp</dimen>
+    <dimen name="play_icon_height">@dimen/play_icon_width</dimen>
+
+    <dimen name="trailer_num_marginStart">32dp</dimen>
+    <dimen name="trailer_num_textSize">14sp</dimen>
+
+    <dimen name="rating_textSize">12sp</dimen>
 </resources>

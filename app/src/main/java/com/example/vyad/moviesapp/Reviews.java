@@ -3,11 +3,13 @@
 */
 package com.example.vyad.moviesapp;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  *  Wraps reviews data of movies
  */
-public class Reviews {
-
+public class Reviews implements Parcelable {
     // Unique id of a review
     private final String mId;
 
@@ -27,9 +29,25 @@ public class Reviews {
         mUrl = url;
     }
 
-    public String getId() {
-        return mId;
+    @SuppressWarnings("WeakerAccess")
+    protected Reviews(Parcel in) {
+        mId = in.readString();
+        mAuthor = in.readString();
+        mContent = in.readString();
+        mUrl = in.readString();
     }
+
+    public static final Creator<Reviews> CREATOR = new Creator<Reviews>() {
+        @Override
+        public Reviews createFromParcel(Parcel in) {
+            return new Reviews(in);
+        }
+
+        @Override
+        public Reviews[] newArray(int size) {
+            return new Reviews[size];
+        }
+    };
 
     public String getAuthor() {
         return mAuthor;
@@ -39,7 +57,16 @@ public class Reviews {
         return mContent;
     }
 
-    public String getUrl() {
-        return mUrl;
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(mId);
+        parcel.writeString(mAuthor);
+        parcel.writeString(mContent);
+        parcel.writeString(mUrl);
     }
 }

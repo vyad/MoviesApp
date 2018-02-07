@@ -30,12 +30,13 @@ public class MoviesUtils {
         while (cursor.moveToNext()) {
             String movies_id = cursor.getString(cursor.getColumnIndex(MovieContract.MoviesEntry.COLUMN_MOVIE_ID));
             String title = cursor.getString(cursor.getColumnIndex(MovieContract.MoviesEntry.COLUMN_TITLE));
+            String backdropPath = cursor.getString(cursor.getColumnIndex(MovieContract.MoviesEntry.COLUMN_BACKDROP_PATH));
             String posterPath = cursor.getString(cursor.getColumnIndex(MovieContract.MoviesEntry.COLUMN_POSTER_PATH));
             String overview = cursor.getString(cursor.getColumnIndex(MovieContract.MoviesEntry.COLUMN_OVERVIEW));
             double voteAverage = cursor.getDouble(cursor.getColumnIndex(MovieContract.MoviesEntry.COLUMN_VOTE_AVERAGE));
             String releaseDate = cursor.getString(cursor.getColumnIndex(MovieContract.MoviesEntry.COLUMN_RELEASE_DATE));
             double popularity = cursor.getDouble(cursor.getColumnIndex(MovieContract.MoviesEntry.COLUMN_POPULARITY));
-            Movies movies = new Movies(movies_id, title, posterPath, overview, voteAverage, releaseDate, popularity);
+            Movies movies = new Movies(movies_id, title, posterPath, overview, voteAverage, releaseDate, popularity, backdropPath);
             movieArray[i++] = movies;
         }
         return movieArray;

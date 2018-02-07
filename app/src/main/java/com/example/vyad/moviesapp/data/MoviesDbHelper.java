@@ -19,11 +19,16 @@ class MoviesDbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "movies.db";
 
 //    Current version of database. onUpgrade method will be called only if database version is changed.
-    private static final int DATABASE_VERSION = 1;
+
+    private static final int DATABASE_VERSION = 2;
 
     public MoviesDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+
+    private static final String ALTER_TABLE_ADD_COLUMN_BACKDROP_PATH =
+            "ALTER TABLE " + MoviesEntry.TABLE_NAME + " ADD COLUMN" +
+                    MoviesEntry.COLUMN_BACKDROP_PATH + " STRING NOT NULL";
 
     @SuppressLint("SQLiteString")
     @Override
@@ -37,7 +42,10 @@ class MoviesDbHelper extends SQLiteOpenHelper {
 
                         MoviesEntry.COLUMN_TITLE + " STRING NOT NULL," +
 
+                        MoviesEntry.COLUMN_BACKDROP_PATH + " STRING NOT NULL, " +
+
                         MoviesEntry.COLUMN_POSTER_PATH + " STRING NOT NULL, " +
+
                         MoviesEntry.COLUMN_RELEASE_DATE + " STRING NOT NULL, " +
 
                         MoviesEntry.COLUMN_OVERVIEW + " STRING NOT NULL, " +
@@ -49,11 +57,13 @@ class MoviesDbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(SQL_CREATE_MOVIES_TABLE);
 
 
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MoviesEntry.TABLE_NAME);
-        onCreate(sqLiteDatabase);
+        if (oldVersion > 1) {
+            sqLiteDatabase.execSQL(ALTER_TABLE_ADD_COLUMN_BACKDROP_PATH);
+        }
     }
 }

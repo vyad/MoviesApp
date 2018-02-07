@@ -27,7 +27,8 @@ public class MoviesProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
+                        @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         Log.d(TAG, "Query method is called");
         Cursor cursor = mMoviesDbHelper.getReadableDatabase().query(
                 MoviesEntry.TABLE_NAME,
@@ -71,7 +72,8 @@ public class MoviesProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, @Nullable String selection,
+                      @Nullable String[] selectionArgs) {
         Log.d(TAG, "Delete method is called");
 
         if (null == selection) selection = "1";
@@ -91,7 +93,8 @@ public class MoviesProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
+    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s,
+                      @Nullable String[] strings) {
         throw new IllegalArgumentException("update method is not yet implemented");
     }
 }

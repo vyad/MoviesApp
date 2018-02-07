@@ -18,8 +18,6 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsH
     // List of reviews
     private Reviews[] mReviews;
 
-    private static final String TAG = ReviewsAdapter.class.getName();
-
     @Override
     public ReviewsAdapter.ReviewsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();

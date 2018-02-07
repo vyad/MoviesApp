@@ -19,6 +19,7 @@ public class Movies implements Parcelable {
     private final String mOriginalTitle;
     private final String mOverview;
     private final String mReleaseDate;
+    private final String mBackdropPath;
 
     /**
      * constructs a movies object by taking movie attribute as formal parameters.
@@ -31,7 +32,7 @@ public class Movies implements Parcelable {
      * @param popularity how popular this movie is
      */
     public Movies(final String id, final String originalTitle, final String posterPath, final String overview, final double voteAverage,
-                  final String releaseDate, final double popularity) {
+                  final String releaseDate, final double popularity, final String backdropPath) {
         mId = id;
         mOriginalTitle = originalTitle;
         mPosterPath = posterPath;
@@ -39,6 +40,7 @@ public class Movies implements Parcelable {
         mVoteAverage = voteAverage;
         mReleaseDate = releaseDate;
         mPopularity = popularity;
+        mBackdropPath = backdropPath;
     }
 
     public String getId() {
@@ -69,6 +71,10 @@ public class Movies implements Parcelable {
         return mPopularity;
     }
 
+    public String getBackdropPath() {
+        return mBackdropPath;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -83,6 +89,7 @@ public class Movies implements Parcelable {
         out.writeString(mOriginalTitle);
         out.writeString(mOverview);
         out.writeString(mReleaseDate);
+        out.writeString(mBackdropPath);
     }
 
     @SuppressWarnings("unused")
@@ -105,5 +112,6 @@ public class Movies implements Parcelable {
         mOriginalTitle = in.readString();
         mOverview = in.readString();
         mReleaseDate = in.readString();
+        mBackdropPath = in.readString();
     }
 }

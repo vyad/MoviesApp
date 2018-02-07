@@ -36,6 +36,7 @@ final class OpenMoviesJsonUtils {
         final String OVERVIEW = "overview";
         final String RELEASE_DATE = "release_date";
         final String ID = "id";
+        final String BACKDROP_PATH = "backdrop_path";
 
         JSONObject moviesJson = new JSONObject(moviesJsonStr);
         JSONArray moviesArray = moviesJson.getJSONArray(RESULTS);
@@ -47,6 +48,7 @@ final class OpenMoviesJsonUtils {
         String releaseDate;
         double popularity;
         String id;
+        String backdropPath;
         Movies[] movies = new Movies[moviesArray.length()];
 
         for (int i = 0; i < moviesArray.length(); i++) {
@@ -58,7 +60,8 @@ final class OpenMoviesJsonUtils {
             voteAverage = movieObject.getDouble(VOTE_AVERAGE);
             releaseDate = movieObject.getString(RELEASE_DATE);
             popularity = movieObject.getDouble(POPULARITY);
-            movies[i] = new Movies(id, originalTitle, posterPath, overview, voteAverage, releaseDate, popularity);
+            backdropPath = movieObject.getString(BACKDROP_PATH);
+            movies[i] = new Movies(id, originalTitle, posterPath, overview, voteAverage, releaseDate, popularity,backdropPath);
 
         }
         return movies;

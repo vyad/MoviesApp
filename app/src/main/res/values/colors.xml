@@ -6,4 +6,8 @@
     <color name="titleColor">#2a8889</color>
     <color name="white">#FFFFFF</color>
     <color name="textColor">#696d72</color>
+    <color name="primary">#3F51B5</color>
+    <color name="primary_dark">#303F9F</color>
+    <color name="accent">#FF4081</color>
+    <color name="scroll_view_background">#ffe5e5e5</color>
 </resources>

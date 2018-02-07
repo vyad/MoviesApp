@@ -6,7 +6,9 @@ package com.example.vyad.moviesapp.activity;
 
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
+import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -44,6 +46,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     private static final String TAG = MainActivity.class.getName();
 
+    private static final String BUNDLE_RECYCLER_LAYOUT = "bundle";
+    private static final String MOVIES = "movies";
+
     //  Loader id to uniquely this loader
     private static final int MOVIES_LOADER = 22;
 
@@ -66,23 +71,22 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     private String mPopularMoviesUrl;
     private String mRatedMoviesUrl;
 
+    private Movies[] mMovies;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 //        Implementing Butter knife
         ButterKnife.bind(this);
 
-//        Initializing the movies popular and highest rated movies url
-        mPopularMoviesUrl = NetworkUtils.getPopularMoviesUrl(this);
-        mRatedMoviesUrl = NetworkUtils.getTopRatedMoviesUrl(this);
-
-        /*
-          GridLayoutManager to shows movies poster in grid form
-         */
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
-        mMoviesList.setLayoutManager(layoutManager);
+//        Setting different for portrait and landscape mode
+        Configuration configuration = getResources().getConfiguration();
+        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mMoviesList.setLayoutManager(new GridLayoutManager(this, 2));
+        } else {
+            mMoviesList.setLayoutManager(new GridLayoutManager(this, 3));
+        }
 
         /*
          * Use this setting to improve performance if you know that changes in content do not
@@ -98,6 +102,22 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
          /* Setting the adapter attaches it to the RecyclerView in our layout. */
         mMoviesList.setAdapter(mMoviesAdapter);
+
+        if (savedInstanceState != null) {
+            mMovies = (Movies[]) savedInstanceState.getParcelableArray(MOVIES);
+            loadMoviesData(mMovies);
+            Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
+            mMoviesList.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+            return;
+        }
+
+        initOrStartLoader();
+    }
+
+    private void initOrStartLoader() {
+        //        Initializing the movies popular and highest rated movies url
+        mPopularMoviesUrl = NetworkUtils.getPopularMoviesUrl(this);
+        mRatedMoviesUrl = NetworkUtils.getTopRatedMoviesUrl(this);
 
         LoaderManager loaderManager = getSupportLoaderManager();
         Loader<Movies[]> loader = loaderManager.getLoader(MOVIES_LOADER);
@@ -128,7 +148,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     @Override
     public void onLoadFinished(Loader<Movies[]> loader, Movies[] data) {
         if (data != null) {
-            loadMoviesData(data);
+            mMovies = data;
+            loadMoviesData(mMovies);
         } else {
             showErrorMessage();
         }
@@ -234,7 +255,14 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
             showErrorMessage();
             return;
         }
-        Movies[] movies = MoviesUtils.getMoviesObjectFromCursor(cursor);
-        mMoviesAdapter.setMoviesData(movies);
+        mMovies = MoviesUtils.getMoviesObjectFromCursor(cursor);
+        mMoviesAdapter.setMoviesData(mMovies);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, mMoviesList.getLayoutManager().onSaveInstanceState());
+        outState.putParcelableArray(MOVIES, mMovies);
     }
 }
