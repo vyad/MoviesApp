@@ -5,7 +5,7 @@ package com.example.vyad.moviesapp.util;
 
 import android.database.Cursor;
 
-import com.example.vyad.moviesapp.Movies;
+import com.example.vyad.moviesapp.MoviesResource;
 import com.example.vyad.moviesapp.data.MovieContract;
 
 import java.text.ParseException;
@@ -24,8 +24,8 @@ public class MoviesUtils {
      * @param cursor cursor having movies data
      * @return list of movies
      */
-    public static Movies[] getMoviesObjectFromCursor(final Cursor cursor) {
-        Movies[] movieArray = new Movies[cursor.getCount()];
+    public static MoviesResource.Movies[] getMoviesObjectFromCursor(final Cursor cursor) {
+        MoviesResource.Movies[] movieArray = new MoviesResource.Movies[cursor.getCount()];
         int i = 0;
         while (cursor.moveToNext()) {
             String movies_id = cursor.getString(cursor.getColumnIndex(MovieContract.MoviesEntry.COLUMN_MOVIE_ID));
@@ -36,7 +36,7 @@ public class MoviesUtils {
             double voteAverage = cursor.getDouble(cursor.getColumnIndex(MovieContract.MoviesEntry.COLUMN_VOTE_AVERAGE));
             String releaseDate = cursor.getString(cursor.getColumnIndex(MovieContract.MoviesEntry.COLUMN_RELEASE_DATE));
             double popularity = cursor.getDouble(cursor.getColumnIndex(MovieContract.MoviesEntry.COLUMN_POPULARITY));
-            Movies movies = new Movies(movies_id, title, posterPath, overview, voteAverage, releaseDate, popularity, backdropPath);
+            MoviesResource.Movies movies = new MoviesResource.Movies(movies_id, title, posterPath, overview, voteAverage, releaseDate, popularity, backdropPath);
             movieArray[i++] = movies;
         }
         return movieArray;

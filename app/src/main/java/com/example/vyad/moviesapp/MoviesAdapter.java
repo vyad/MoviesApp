@@ -18,7 +18,7 @@ import com.squareup.picasso.Picasso;
  */
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesHolder> {
 
-    private Movies[] mMoviesData;
+    private MoviesResource.Movies[] mMoviesData;
 
     private final MoviesClickListener mListener;
 
@@ -38,7 +38,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesHold
      *
      * @param moviesData list of movies data
      */
-    public void setMoviesData(final Movies[] moviesData) {
+    public void setMoviesData(final MoviesResource.Movies[] moviesData) {
         mMoviesData = moviesData;
         notifyDataSetChanged();
     }
@@ -70,7 +70,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesHold
      * create abstract method to handle onClick on any movie item
      */
     public interface MoviesClickListener {
-        void onClickMovies(final Movies movies);
+        void onClickMovies(final MoviesResource.Movies movies);
     }
 
     /**
@@ -100,7 +100,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesHold
          * @param listIndex index of view
          */
         void bind(int listIndex) {
-            Movies movies = mMoviesData[listIndex];
+            MoviesResource.Movies movies = mMoviesData[listIndex];
             String thumbnailUrl = MOVIE_THUMBNAIL_BASE_URL + movies.getPosterPath();
             Picasso.with(context)
                     .load(thumbnailUrl)

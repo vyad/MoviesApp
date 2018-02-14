@@ -23,13 +23,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.vyad.moviesapp.Movies;
 import com.example.vyad.moviesapp.MoviesAdapter;
+import com.example.vyad.moviesapp.MoviesResource;
 import com.example.vyad.moviesapp.R;
 import com.example.vyad.moviesapp.util.FetchTaskUtils;
 import com.example.vyad.moviesapp.data.MovieContract.MoviesEntry;
 import com.example.vyad.moviesapp.util.MoviesUtils;
-import com.example.vyad.moviesapp.util.NetworkUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,7 +39,7 @@ import butterknife.ButterKnife;
  * to open movies details.
  */
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesClickListener,
-        LoaderCallbacks<Movies[]> {
+        LoaderCallbacks<MoviesResource.Movies[]> {
 
     private MoviesAdapter mMoviesAdapter;
 
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     //  Loader id to uniquely this loader
     private static final int MOVIES_LOADER = 22;
 
-    private static final String MOVIES_URL = "movies_url";
+    private static final String MOVIES_TYPE = "movies_url";
 
     @SuppressWarnings("WeakerAccess")
     @BindView(R.id.rv_recycler_view)
@@ -71,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     private String mPopularMoviesUrl;
     private String mRatedMoviesUrl;
 
-    private Movies[] mMovies;
+    private MoviesResource.Movies[] mMovies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         mMoviesList.setAdapter(mMoviesAdapter);
 
         if (savedInstanceState != null) {
-            mMovies = (Movies[]) savedInstanceState.getParcelableArray(MOVIES);
+            mMovies = (MoviesResource.Movies[]) savedInstanceState.getParcelableArray(MOVIES);
             loadMoviesData(mMovies);
             Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
             mMoviesList.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
@@ -116,13 +115,13 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     private void initOrStartLoader() {
         //        Initializing the movies popular and highest rated movies url
-        mPopularMoviesUrl = NetworkUtils.getPopularMoviesUrl(this);
-        mRatedMoviesUrl = NetworkUtils.getTopRatedMoviesUrl(this);
+        mPopularMoviesUrl = getString(R.string.popular);
+        mRatedMoviesUrl = getString(R.string.top_rated);
 
         LoaderManager loaderManager = getSupportLoaderManager();
-        Loader<Movies[]> loader = loaderManager.getLoader(MOVIES_LOADER);
+        Loader<MoviesResource.Movies[]> loader = loaderManager.getLoader(MOVIES_LOADER);
         Bundle bundle = new Bundle();
-        bundle.putString(MOVIES_URL, mPopularMoviesUrl);
+        bundle.putString(MOVIES_TYPE, mPopularMoviesUrl);
 
         //If loader is not created then create the loader else restart the same loader for current
         // bundle and callbacks
@@ -134,19 +133,19 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     }
 
     @Override
-    public void onClickMovies(Movies movies) {
+    public void onClickMovies(MoviesResource.Movies movies) {
         Intent intentToStartDetailsActivity = new Intent(this, DetailsActivity.class);
         intentToStartDetailsActivity.putExtra(Intent.EXTRA_TEXT, movies);
         startActivity(intentToStartDetailsActivity);
     }
 
     @Override
-    public Loader<Movies[]> onCreateLoader(int id, final Bundle args) {
-        return new FetchTaskUtils(this, args.getString(MOVIES_URL), getString(R.string.movies));
+    public Loader<MoviesResource.Movies[]> onCreateLoader(int id, final Bundle args) {
+        return new FetchTaskUtils(this, args.getString(MOVIES_TYPE), null);
     }
 
     @Override
-    public void onLoadFinished(Loader<Movies[]> loader, Movies[] data) {
+    public void onLoadFinished(Loader<MoviesResource.Movies[]> loader, MoviesResource.Movies[] data) {
         if (data != null) {
             mMovies = data;
             loadMoviesData(mMovies);
@@ -156,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     }
 
     @Override
-    public void onLoaderReset(Loader<Movies[]> loader) {
+    public void onLoaderReset(Loader<MoviesResource.Movies[]> loader) {
 
     }
 
@@ -228,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
      *
      * @param movies array of movies data
      */
-    private void loadMoviesData(final Movies[] movies) {
+    private void loadMoviesData(final MoviesResource.Movies[] movies) {
         showMoviesData();
         mMoviesAdapter.setMoviesData(movies);
     }
@@ -240,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
      */
     private void resetLoader(final String moviesUrl) {
         Bundle bundle = new Bundle();
-        bundle.putString(MOVIES_URL, moviesUrl);
+        bundle.putString(MOVIES_TYPE, moviesUrl);
         getSupportLoaderManager().restartLoader(MOVIES_LOADER, bundle, this);
     }
 

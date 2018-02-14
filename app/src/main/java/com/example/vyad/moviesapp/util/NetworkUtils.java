@@ -9,7 +9,9 @@ import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.util.Log;
 
+import com.example.vyad.moviesapp.APIInterface;
 import com.example.vyad.moviesapp.BuildConfig;
 
 import java.io.IOException;
@@ -19,7 +21,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
+import com.example.vyad.moviesapp.MoviesResource;
 import com.example.vyad.moviesapp.R;
+import com.example.vyad.moviesapp.ReviewsResource;
+import com.example.vyad.moviesapp.TrailerResource;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * These utilities will be used to communicate with the movies servers.
@@ -27,53 +37,8 @@ import com.example.vyad.moviesapp.R;
 public final class NetworkUtils {
 
 
+    private static final String TAG = NetworkUtils.class.getName();
     private static final String API_KEY = "api_key";
-
-    /**
-     * Takes url as string and convert it into URL instance
-     *
-     * @param moviesUrl movies api url which need to be called
-     * @return movies api URL instance.
-     * @throws MalformedURLException if a string can not be converted into a url
-     */
-    public static URL buildUrl(final String moviesUrl) throws MalformedURLException {
-        Uri uri = Uri.parse(moviesUrl).buildUpon()
-                .appendQueryParameter(API_KEY, BuildConfig.API_KEY).build();
-        return new URL(String.valueOf(uri));
-    }
-
-    /**
-     * Establish a connection with server and read and return the response of it
-     *
-     * @param context application context
-     * @param url     api url to to hit server
-     * @return server response
-     * @throws IOException if stream of a file cannot be read
-     */
-    public static String getResponseFromHttpUrl(final Context context, final URL url)
-            throws IOException {
-
-        if (!isOnline(context)) {
-            return null;
-        }
-
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        try {
-            InputStream in = urlConnection.getInputStream();
-
-            Scanner scanner = new Scanner(in);
-            scanner.useDelimiter("\\A");
-
-            boolean hasInput = scanner.hasNext();
-            if (hasInput) {
-                return scanner.next();
-            } else {
-                return null;
-            }
-        } finally {
-            urlConnection.disconnect();
-        }
-    }
 
     /**
      * checks network connectivity
@@ -111,17 +76,70 @@ public final class NetworkUtils {
         return String.format(reviewUrl, moviesId);
     }
 
-    public static String getPopularMoviesUrl(final Context context) {
-        Resources rs = context.getResources();
-        String moviesUrlFormat = rs.getString(R.string.movies_url);
-        String typeOfUrl = rs.getString(R.string.popular);
-        return String.format(moviesUrlFormat, typeOfUrl);
+    private static APIInterface getApiInterface(final Context context) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(context.getResources().getString(R.string.base_url))
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        return retrofit.create(APIInterface.class);
     }
 
-    public static String getTopRatedMoviesUrl(final Context context) {
-        Resources rs = context.getResources();
-        String moviesUrlFormat = rs.getString(R.string.movies_url);
-        String typeOfUrl = rs.getString(R.string.top_rated);
-        return String.format(moviesUrlFormat, typeOfUrl);
+    public static MoviesResource.Movies[] getMovies(final Context context, final String path)  {
+
+        if (!isOnline(context)) {
+            return null;
+        }
+
+        APIInterface apiInterface = getApiInterface(context);
+        Call<MoviesResource> call = apiInterface.listMovies(path, BuildConfig.API_KEY);
+        try {
+            Response<MoviesResource> response = call.execute();
+            if (response != null) {
+                return response.body().results;
+            }
+        } catch (IOException e) {
+            Log.d(TAG, "Some exception occurred while hitting the service", e);
+        }
+
+        return null;
+    }
+
+    public static TrailerResource.Trailer[] getTrailers(final Context context, final String moviesId) {
+
+        if (!isOnline(context)) {
+            return null;
+        }
+
+        APIInterface apiInterface = getApiInterface(context);
+        Call<TrailerResource> call = apiInterface.listTrailer(moviesId, BuildConfig.API_KEY);
+        try {
+            Response<TrailerResource> response = call.execute();
+            if (response != null) {
+                return response.body().results;
+            }
+        } catch (IOException e) {
+            Log.d(TAG, "Some exception occurred while hitting the service", e);
+        }
+        return null;
+    }
+
+    public static ReviewsResource.Reviews[] getReviews(final Context context, final String moviesId) {
+
+        if (!isOnline(context)) {
+            return null;
+        }
+
+        APIInterface apiInterface = getApiInterface(context);
+        Call<ReviewsResource> call = apiInterface.listReviews(moviesId, BuildConfig.API_KEY);
+        try {
+            Response<ReviewsResource> response = call.execute();
+            if (response != null) {
+                return response.body().results;
+            }
+        } catch (IOException e) {
+            Log.d(TAG, "Some exception occurred while hitting the service", e);
+        }
+
+        return null;
     }
 }

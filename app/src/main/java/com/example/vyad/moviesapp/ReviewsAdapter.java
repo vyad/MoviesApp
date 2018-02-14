@@ -16,7 +16,7 @@ import android.widget.TextView;
 public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsHolder> {
 
     // List of reviews
-    private Reviews[] mReviews;
+    private ReviewsResource.Reviews[] mReviews;
 
     @Override
     public ReviewsAdapter.ReviewsHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -46,7 +46,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsH
     class ReviewsHolder extends RecyclerView.ViewHolder {
 
 //        Current review in adapter
-        Reviews mSpecificReviews;
+        ReviewsResource.Reviews mSpecificReviews;
 
 //        TextView to show the author name
         final TextView mAuthorTextView;
@@ -79,7 +79,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewsH
      * Updates mReviews, list of review of the class
      * @param reviews current review data
      */
-    public void setReviewsData(final Reviews[] reviews) {
+    public void setReviewsData(final ReviewsResource.Reviews[] reviews) {
         mReviews = reviews;
         notifyDataSetChanged();
     }

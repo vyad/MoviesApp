@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerHolder>{
 
-    private Trailer[] mTrailer;
+    private TrailerResource.Trailer[] mTrailer;
 
     private final TrailerClickListener mListener;
 
@@ -21,7 +21,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerH
     }
 
     public interface TrailerClickListener {
-         void click(final Trailer trailer);
+         void click(final TrailerResource.Trailer trailer);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerH
         }
     }
 
-    public void setTrailerData(final Trailer[] trailers) {
+    public void setTrailerData(final TrailerResource.Trailer[] trailers) {
         mTrailer = trailers;
         notifyDataSetChanged();
     }

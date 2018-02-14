@@ -12,8 +12,6 @@ import android.util.Log;
 
 import com.example.vyad.moviesapp.R;
 
-import java.net.URL;
-
 /**
  * Fetch movies data in a background thread and notify the activity when it is done.
  */
@@ -23,17 +21,16 @@ public class FetchTaskUtils extends AsyncTaskLoader {
 
     private final Context mContext;
 
-//    Url to hit for data
-    private final String mUrl;
-
-//    This help to identify return type of data (every time we get string response data but need to return in object form).
     private final String mRequestType;
 
-    public FetchTaskUtils(final Context context, final String url, final String requestType) {
+    private final String mMoviesId;
+
+
+    public FetchTaskUtils(final Context context, final String requestType, final String moviesId) {
         super(context);
         mContext = context;
-        mUrl = url;
         mRequestType = requestType;
+        mMoviesId = moviesId;
     }
 
     @Override
@@ -44,27 +41,21 @@ public class FetchTaskUtils extends AsyncTaskLoader {
 
     @Override
     public Object loadInBackground() {
-        if (TextUtils.isEmpty(mUrl)) {
+        if (TextUtils.isEmpty(mRequestType)) {
             return null;
         }
 
         try {
-            URL requestURL = NetworkUtils.buildUrl(mUrl);
-
-            String response = NetworkUtils.getResponseFromHttpUrl(
-                    mContext, requestURL);
-
             Resources rs = mContext.getResources();
 
-            if (rs.getString(R.string.movies).equals(mRequestType)) {
-                return OpenMoviesJsonUtils.getMoviesObjectFromJsonString(response);
+            if (rs.getString(R.string.popular).equals(mRequestType)
+                    || rs.getString(R.string.top_rated).equals(mRequestType)) {
+                return NetworkUtils.getMovies(mContext, mRequestType);
             } else if (rs.getString(R.string.trailer).equals(mRequestType)) {
-                return OpenMoviesJsonUtils.getTrailerObjectFromJsonString(response);
+                return NetworkUtils.getTrailers(mContext, mMoviesId);
             } else if (rs.getString(R.string.reviews).equals(mRequestType)) {
-                return OpenMoviesJsonUtils.getReviewsObjectFromJsonString(response);
+                return NetworkUtils.getReviews(mContext, mMoviesId);
             }
-
-            return response;
 
         } catch (Exception e) {
             Log.e(TAG, "Exception occurred", e);

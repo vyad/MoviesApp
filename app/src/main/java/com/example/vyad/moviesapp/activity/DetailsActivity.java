@@ -30,13 +30,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.vyad.moviesapp.Movies;
+import com.example.vyad.moviesapp.MoviesResource;
 import com.example.vyad.moviesapp.R;
-import com.example.vyad.moviesapp.Reviews;
 import com.example.vyad.moviesapp.ReviewsAdapter;
-import com.example.vyad.moviesapp.Trailer;
+import com.example.vyad.moviesapp.ReviewsResource;
 import com.example.vyad.moviesapp.TrailerAdapter;
 
+import com.example.vyad.moviesapp.TrailerResource;
 import com.example.vyad.moviesapp.services.MoviesService;
 import com.example.vyad.moviesapp.util.FetchTaskUtils;
 import com.example.vyad.moviesapp.util.MoviesUtils;
@@ -71,11 +71,11 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
     private static final String REVIEWS_URL = "reviews_url";
 
-    private Movies mMovies;
+    private MoviesResource.Movies mMovies;
 
-    private Trailer[] mTrailers;
+    private TrailerResource.Trailer[] mTrailers;
 
-    private Reviews[] mReviews;
+    private ReviewsResource.Reviews[] mReviews;
 
     private TrailerAdapter mTrailerAdapter;
 
@@ -143,8 +143,8 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
 
         if (savedInstanceState != null) {
-            mTrailers = (Trailer[]) savedInstanceState.getParcelableArray(TRAILER);
-            mReviews = (Reviews[]) savedInstanceState.getParcelableArray(REVIEWS);
+            mTrailers = (TrailerResource.Trailer[]) savedInstanceState.getParcelableArray(TRAILER);
+            mReviews = (ReviewsResource.Reviews[]) savedInstanceState.getParcelableArray(REVIEWS);
             setTrailerAdapter();
             setReviewsAdapter();
 
@@ -240,9 +240,9 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         Log.d(TAG, "inside onCreateLoader");
         switch (id) {
             case TRAILER_LOADER:
-                return new FetchTaskUtils(this, args.getString(TRAILER_URL), getString(R.string.trailer));
+                return new FetchTaskUtils(this, getString(R.string.trailer), mMovies.getId());
             case REVIEWS_LOADER:
-                return new FetchTaskUtils(this, args.getString(REVIEWS_URL), getString(R.string.reviews));
+                return new FetchTaskUtils(this, getString(R.string.reviews), mMovies.getId());
             default:
                 throw new IllegalArgumentException("Unknown Loader");
         }
@@ -254,11 +254,11 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         if (data == null) {
             Log.d(TAG, "data is null");
         } else if (loaderId == TRAILER_LOADER) {
-            mTrailers = (Trailer[]) data;
+            mTrailers = (TrailerResource.Trailer[]) data;
             setTrailerAdapter();
         } else if (loaderId == REVIEWS_LOADER) {
             Log.d(TAG, "reviews");
-            mReviews = (Reviews[]) data;
+            mReviews = (ReviewsResource.Reviews[]) data;
             setReviewsAdapter();
         } else {
             throw new IllegalArgumentException("Illegal Object");
@@ -272,7 +272,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
 
     @Override
-    public void click(Trailer trailer) {
+    public void click(TrailerResource.Trailer trailer) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri file = Uri.parse(String.format(getString(R.string.youtube_url), trailer.getKey()));
         intent.setData(file);
